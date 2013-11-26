@@ -122,7 +122,7 @@ class Game :
          #self.bba[i].m.r.width = 0.05
          #self.bba[i].m.r.height = 0.05
          self.bba[i].gen_dl()
-         #self.bba[i].gen_vbo()
+         self.bba[i].gen_vbo()
          #self.bba[i].gen_va()
          self.rand_vector(self.bba[i], 5.0)
          Collider.add(self.bba[i])

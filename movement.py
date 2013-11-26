@@ -2,7 +2,7 @@ from math_3d import *
 from action import *
 import timer as Timer
 
-class Movement :
+class Movement ( object ):
    mret = np.identity(4)
    def __init__(self) :
       self.sll = SlideLeft(self)
@@ -30,6 +30,9 @@ class Movement :
       for sm in self.sub_movements :
          sm.turn_by(a)
 
+class AccMovement ( Movement ) :
+   def __init__(self) :
+      super().__init__()
 
 class SlideLeft(Action) :
    def __init__(self, mov) :

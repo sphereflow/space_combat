@@ -23,23 +23,27 @@ class Billboard(BoundCollidable) :
       self.tex.set_tex()
       if self.vao != None :
          glBindVertexArray(self.vao)
-         glDrawArrays(GL_QUADS, 0, 4)
+         glDrawArrays(GL_TRIANGLES, 0, 4)
          return
       if self.vbos != None :
          glBindBuffer(GL_ARRAY_BUFFER, self.vbos[0])
          glVertexPointer(2, GL_FLOAT, 0, None)
          glBindBuffer(GL_ARRAY_BUFFER,self.vbos[1])
          glTexCoordPointer(2, GL_FLOAT, 0, None)
-         glDrawArrays(GL_QUADS, 0, 4)
+         glDrawArrays(GL_TRIANGLES, 0, 6)
          return
       if self.list_index >= 0 :
          glCallList(self.list_index)
          return
-      glBegin(GL_QUADS)
+      glBegin(GL_TRIANGLES)
       glTexCoord2i(0, 1)
       glVertex2f(-self.m.r.width * 0.5, -self.m.r.height * 0.5)
       glTexCoord2i(1, 1)
       glVertex2f(self.m.r.width * 0.5, -self.m.r.height * 0.5)
+      glTexCoord2i(1, 0)
+      glVertex2f(self.m.r.width * 0.5, self.m.r.height * 0.5)
+      glTexCoord2i(0, 1)
+      glVertex2f(-self.m.r.width * 0.5, -self.m.r.height * 0.5)
       glTexCoord2i(1, 0)
       glVertex2f(self.m.r.width * 0.5, self.m.r.height * 0.5)
       glTexCoord2i(0, 0)
@@ -60,11 +64,15 @@ class Billboard(BoundCollidable) :
    def gen_dl(self) :
       list_index = glGenLists(1)
       glNewList(list_index, GL_COMPILE)
-      glBegin(GL_QUADS)
+      glBegin(GL_TRIANGLES)
       glTexCoord2i(0, 1)
       glVertex2f(-self.m.r.width * 0.5, -self.m.r.height * 0.5)
       glTexCoord2i(1, 1)
       glVertex2f(self.m.r.width * 0.5, -self.m.r.height * 0.5)
+      glTexCoord2i(1, 0)
+      glVertex2f(self.m.r.width * 0.5, self.m.r.height * 0.5)
+      glTexCoord2i(0, 1)
+      glVertex2f(-self.m.r.width * 0.5, -self.m.r.height * 0.5)
       glTexCoord2i(1, 0)
       glVertex2f(self.m.r.width * 0.5, self.m.r.height * 0.5)
       glTexCoord2i(0, 0)
@@ -80,16 +88,18 @@ class Billboard(BoundCollidable) :
       glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0)
       glEnableVertexAttribArray(1)
       glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0)
-      # TODO : is buggy
+      # TODO : this sets the modelview, too. prevent this from happening
 
    def gen_vbo(self) :
       self.vbos = glGenBuffers(2) 
       d = np.array([-self.m.r.width * 0.5, -self.m.r.height * 0.5,
-         self.m.r.width * 0.5, -self.m.r.height * 0.5,
-         self.m.r.width * 0.5, self.m.r.height * 0.5,
-         -self.m.r.width * 0.5, self.m.r.height * 0.5], dtype = 'float32')
+                     self.m.r.width * 0.5, -self.m.r.height * 0.5,
+                     self.m.r.width * 0.5,  self.m.r.height * 0.5,
+                    -self.m.r.width * 0.5, -self.m.r.height * 0.5,
+                     self.m.r.width * 0.5,  self.m.r.height * 0.5,
+                    -self.m.r.width * 0.5,  self.m.r.height * 0.5], dtype = 'float32')
       glBindBuffer(GL_ARRAY_BUFFER, self.vbos[0])
       glBufferData(GL_ARRAY_BUFFER, d, GL_STATIC_DRAW)
-      d = np.array([0.0, 1, 1, 1, 1, 0, 0, 0], dtype = 'float32')
+      d = np.array([0.0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0], dtype = 'float32')
       glBindBuffer(GL_ARRAY_BUFFER, self.vbos[1])
       glBufferData(GL_ARRAY_BUFFER, d, GL_STATIC_DRAW)
