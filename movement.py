@@ -33,6 +33,26 @@ class Movement ( object ):
 class AccMovement ( Movement ) :
    def __init__(self) :
       super().__init__()
+      # deceleration ratio
+      # acceleration is done with the ups variable in sll, slr, ...
+      self.dec = 0.0
+      self.direction = np.array([0.0, 0.0, 0.0, 1.0])
+      self.max_speed = 1.0
+
+   def move_by(self, v) :
+      self.direction += v
+      l = length(self.direction)
+      if l > self.max_speed :
+         self.direction *= self.max_speed / l
+
+   # for the action to perform correctly it should be invoked after all subactions have performed
+   # to do this it has to be enqueued after all subactions
+   def perform(self) :
+      l = length(self.direction)
+      ldec = l - l * self.dec * Timer.instance.frame_time()
+      if l != 0 :
+         self.direction *= ldec / l
+      self.r.pos += self.direction * Timer.instance.frame_time()
 
 class SlideLeft(Action) :
    def __init__(self, mov) :
@@ -87,10 +107,6 @@ class Forward(Action) :
       self.max_ups = 1.0
       self.acc = None
 
-   def add_acceleration(self, ups) :
-      self.acc = Acceleration(self)
-      self.acc.ups = ups
-
    def perform(self) :
       mbuf = np.identity(4)
       set_matrix_rotation(mbuf, self.m.r.angle)
@@ -105,26 +121,9 @@ class Backward(Action) :
       self.max_ups = 1.0
       self.acc = None
 
-   def add_acceleration(self, ups) :
-      self.acc = Acceleration(self)
-      self.acc.ups = self.ups
-
    def perform(self) :
       mbuf = np.identity(4)
       set_matrix_rotation(mbuf, self.m.r.angle)
       vbuf = np.dot(np.array([0.0, -1.0, 0.0, 1.0]), mbuf)
       vbuf *= self.ups * Timer.instance.frame_time()
       self.m.move_by(vbuf)
-
-# to move with acceleration call add_acceleration
-# set max ups
-# then enqueue accelerated movement in UpdateEvt
-# bind acc to key/ mouse / whatever evt
-class Acceleration(Action) :
-   def __init__(self, parent) :
-      self.ups = 1.0 # acceleration rate
-      
-   def perform(self) :
-      self.parent.ups += self.ups
-      if self.parent.ups > self.parent.max_ups :
-         self.parent.ups = self.parent.max_ups
