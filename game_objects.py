@@ -22,10 +22,11 @@ class GameObject( Billboard ) :
 
    def render(self) :
       pos_copy = self.m.r.pos.copy()
-      ma = np.identity(4)
-      set_matrix_rotation(ma, self.m.r.angle)
-      self.m.r.pos -= np.dot(ma, self.turn_point)
-      self.m.r.pos[3] = 1.0
+      #ma = np.identity(4)
+      #set_matrix_rotation(ma, self.m.r.angle)
+      #self.m.r.pos -= np.dot(ma, self.turn_point)
+      #self.m.r.pos[3] = 1.0
+      self.m.r.pos -= (self.m.r.angle * -1).rotate(self.turn_point)
       super().render()
       self.m.r.pos = pos_copy
       for i, c in enumerate(self.children) :
@@ -62,6 +63,8 @@ class Ship( GameObject ) :
    COL_ID = 0
    def __init__(self) :
       super().__init__()
+      # replace Movement with AccMovement
+      self.m = AccMovement()
       self.num_slots = 0
       self.hp = 0
 
@@ -166,10 +169,12 @@ def load_ship(filename) :
    s.num_slots = fp.read_named_int(buf, "num_slots=")
    s.hp = fp.read_named_int(buf, "hp=")
    s.m.fwd.ups = fp.read_named_float(buf, "vf")
-   s.m.fwd.add_acceleration(fp.read_named_float(buf, "accf="))
    s.m.bwd.ups = fp.read_named_float(buf, "vb")
    s.m.sll.ups = s.m.slr.ups = fp.read_named_float(buf, "vslide=")
    s.m.tr.ups = s.m.tl.ups = fp.read_named_float(buf, "turn_rate=")
+   s.m.max_speed = fp.read_named_float(buf, "max_speed=")
+   s.m.dec = fp.read_named_float(buf, "dec=")
+   UpdateEvent.add_action(s.m)
    load_game_object(buf, s)
    for i in range(s.num_slots) :
       wbuf = fp.read_named_string(buf, "slot{0}=".format(i+1), "[")
