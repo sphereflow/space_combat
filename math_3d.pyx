@@ -141,7 +141,10 @@ cdef class Rect :
       cdef np.ndarray[DTYPE_t, ndim = 1] p = np.zeros(4)
       cdef double [:] pv = p
       cdef int i, j, k
-      for i in range(4):
+      cdef int[9] sig
+      for i in range(9) :
+         sig[i] = 0
+      for i in range(4) :
          p2v[3] = 1.0
          #p = np.dot(p2v, mtransv)
          for j in range(4) :
@@ -149,12 +152,65 @@ cdef class Rect :
             for k in range(4) :
                pv[j] += p2v[k] * mtransv[k, j]
          pv[3] = 1.0
+#           |           |
+#     8     |     1     |     2
+#           |           |
+#-----------*-----------*-----------
+#           |           |
+#     7     |     0     |     3
+#           |           |
+#-----------*-----------*-----------
+#           |           |
+#     6     |     5     |     4
+#           |           |
          if (abs(pv[0]) <= (self.width * 0.5)) and (abs(pv[1]) <= (self.height * 0.5)) :
+            # it's in 0
             return True
+         if pv[0] > (self.width * 0.5) :
+            # 2 - 3 - 4
+            if pv[1] > (self.height * 0.5) :
+               # 2
+               sig[2] += 1
+            elif pv[1] < (self.height * -0.5) :
+               # 4
+               sig[4] += 1
+            else :
+               # 3
+               sig[3] += 1
+         elif pv[0] < (self.width * - 0.5) :
+            # 8 - 7 - 6
+            if pv[1] > (self.height * 0.5) :
+               sig[8] += 1
+            elif pv[1] < (self.height * -0.5) :
+               sig[6] += 1
+            else :
+               sig[7] += 1
+         else :
+            # 1 - 5
+            if pv[1] > (self.height * 0.5) :
+               sig[1] += 1
+            else :
+               sig[5] += 1
          if i == 0 :
             p2v[0] *= -1.0
          if i == 1 :
             p2v[1] *= -1.0
          if i == 2 :
             p2v[0] *= -1.0
+      # check the signature
+      # check opposing areas
+      for i in range(1, 5) :
+         if (sig[i] > 0) and (sig[i + 4] > 0) :
+            return True
+      # and another "corner" case
+      if (sig[2] > 0) and (sig[7] > 0) and (sig[5] > 0) :
+         return True
+      if (sig[4] > 0) and (sig[1] > 0) and (sig[7] > 0) :
+         return True
+      if (sig[6] > 0) and (sig[3] > 0) and (sig[1] > 0) :
+         return True
+      if (sig[8] > 0) and (sig[3] > 0) and (sig[5] > 0) :
+         return True
+      # line separations are not needed because of 
+      # r2.contains_vertex_of(r1) will have 2 vertices in opposing areas
       return False
