@@ -1,5 +1,6 @@
 import file_parser as FileParser
 from animation import *
+from texture import *
 import img_loader as ImgLoader
 
 def load(filename) :
