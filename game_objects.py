@@ -1,5 +1,6 @@
 from billboard import *
 from math_3d import *
+from texture import *
 import file_parser as fp
 import img_loader as il
 from action_evt_model import *
