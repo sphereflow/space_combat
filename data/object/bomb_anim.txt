@@ -1,0 +1,7 @@
+width: "1.5"
+height: "1.5"
+
+num_frames: "15"
+frame_time: "0.05"
+looping: "1"
+texture: "image/bomb_anim.png"

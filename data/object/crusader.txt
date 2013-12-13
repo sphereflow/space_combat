@@ -1,0 +1,36 @@
+num_slots="2"
+turn_rate="0.5"
+dest_sound="sound/grenade.ogg"
+dest_anim="object/crusader_exp_anim.txt"
+# acceleration or max_speed fwd
+vf="59.0"
+# acceleration or max_speed bwd
+vb="3.0"
+# acceleration or max_speed sidewards
+vslide="3.0"
+# overall deceleration (only AccMovement)
+dec="0.7"
+# overall maximum speed (only AccMovement)
+max_speed="20.0"
+hp="10"
+tex="image/crusader.png"
+width="1.0"
+height="1.0"
+slot1=
+[
+position_x="-0.2"
+position_y="0.1"
+weapon="object/photon_laser.txt"
+[
+slot2=
+[
+position_x="0.3"
+position_y="0.1"
+weapon="object/photon_laser.txt"
+[
+slot3=
+[
+position_x="0.0"
+position_y="-0.1"
+weapon="object/photon_laser.txt"
+[

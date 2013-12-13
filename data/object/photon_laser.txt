@@ -1,0 +1,17 @@
+turn_point_x="0.0"
+turn_point_y="0.0"
+reload_time="0.3"
+width="0.05"
+height="0.3"
+tex="image/photon_laser.png"
+sound="sound/kick01.ogg"
+shot=
+'
+travel_distance="50.0"
+width="0.04"
+height="1.0"
+v="40.0"
+damage="1"
+tex="image/p_laser_shot.png"
+dest_anim="object/exp_anim.txt"
+'

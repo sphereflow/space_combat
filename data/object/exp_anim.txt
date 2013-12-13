@@ -1,0 +1,6 @@
+width:"0.2"
+height:"0.2"
+num_frames:"16"
+frame_time:"0.02"
+looping:"0"
+texture:"image/exp_anim.png"
